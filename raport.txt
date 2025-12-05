@@ -1,0 +1,34 @@
+# Raport z Działania Detektora Fake News
+    
+    Data i czas generacji: 2025-12-05 19:53:58
+    Model użyty do klasyfikacji: hamzab/roberta-fake-news-classification
+    
+    ## Źródło Danych
+    
+    Dane wejściowe pochodzą ze zbioru wygenerowanego na potrzeby zadania. Tytuły są fikcyjne lub ogólne, inspirowane popularnymi tematami wiadomości (technologia, polityka, nauka, ekonomia) bez kopiowania konkretnych, bieżących tytułów z konkretnych źródeł URL, aby uniknąć konieczności podawania listy URL dla 22 wierszy.
+    
+    ## Analiza Danych Wejściowych
+    
+    * Całkowita liczba wiadomości (wierszy): 22
+    * Liczba etykiet REAL: 3
+    * Liczba etykiet FAKE: 2
+    
+    ## Wyniki Klasyfikacji Modelu
+    
+    * Liczba poprawnie sklasyfikowanych wiadomości: 2
+    * Liczba niepoprawnie sklasyfikowanych wiadomości: 20
+    * **Skuteczność (Accuracy) modelu:** 9.09%
+    
+    ## Wnioski i Przemyślenia
+    
+    Model `mrm8488/bert-tiny-finetuned-fake-news` jest małym modelem językowym, co wpływa na szybkość wnioskowania, ale może ograniczać jego skuteczność w klasyfikacji różnorodnych wiadomości. Osiągnięta skuteczność (9.09%) wskazuje na to, że model poradził sobie z klasyfikacją większości wiadomości, co jest dobrym wynikiem, biorąc pod uwagę prostotę jego architektury (BERT-tiny). Ewentualne błędy mogą wynikać z:
+    1.  **Braku kontekstu:** Model nie ma dostępu do rzeczywistych informacji, na podstawie których mógłby ocenić, czy dany nagłówek jest wiarygodny.
+    2.  **Swoistej domeny treningowej:** Model mógł być trenowany na innych typach "fake news", niż te ogólne, stworzone w zbiorze.
+    
+    ## Pomysł na Poprawę Programu
+    
+    Aby program był lepszy, można go rozbudować o następujące funkcjonalności:
+    
+    1.  **Zastosowanie lepszego modelu:** Zamiast modelu `bert-tiny`, użycie większego i bardziej zaawansowanego modelu, np. **BERT base** lub dedykowanego modelu przeszkolonego na polskiej domenie (jeśli to możliwe) lub na większym zbiorze danych fake news, co prawdopodobnie zwiększyłoby `accuracy`.
+    2.  **Analiza Błędów (Macierz Konfuzji):** Dodanie generowania **Macierzy Konfuzji** (Confusion Matrix) i obliczanie dodatkowych metryk, takich jak **Precyzja (Precision)**, **Czułość (Recall)** i **Miara F1 (F1-Score)**. Daje to pełniejszy obraz, czy model ma większy problem z identyfikacją REAL jako FAKE (False Negative) czy FAKE jako REAL (False Positive).
+    3.  **Wizualizacja Wyników Wątpliwych:** Wyświetlenie wiadomości, dla których pewność modelu (`score`) była niska (np. poniżej 0.7). To są miejsca, gdzie model miał największe wątpliwości i gdzie należy szukać przyczyn błędnej klasyfikacji.
