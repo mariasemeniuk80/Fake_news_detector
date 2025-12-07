@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 import os
 from datetime import datetime
 
-# Stałe
 INPUT_FILE = "wiadomosci.csv"
 OUTPUT_FILE = "wyniki.csv"
 PLOT_FILE = "wyniki_modelu.png"
@@ -44,28 +43,18 @@ def analyze_data(df):
 def run_prediction(texts):
     """Wykorzystuje model AI do klasyfikacji wiadomości."""
     print(f"Inicjalizacja modelu AI: {MODEL_NAME}")
-    # Wczytanie gotowego modelu AI do klasyfikacji tekstu
     classifier = pipeline("text-classification", model=MODEL_NAME)
     
     print("Rozpoczęcie klasyfikacji...")
-    # Model zwraca etykiety "LABEL_0" (Fake) i "LABEL_1" (Real).
-    # Konwersja do oczekiwanych etykiet ('FAKE', 'REAL').
     results = classifier(texts)
     
     predicted_labels = []
     scores = []
     
-    # Przetwarzanie wyników modelu
     for res in results:
-        # Etykieta modelu jest np. 'LABEL_1'.
-        # Konwersja etykiet modelu:
-        # - LABEL_1 (w modelu) -> REAL (w naszym zbiorze)
-        # - LABEL_0 (w modelu) -> FAKE (w naszym zbiorze)
         predicted_label = 'REAL' if res['label'] == 'LABEL_1' else 'FAKE'
         score = res['score']
         
-        # Zgodnie z etykietami modelu: jeśli 'FAKE', to score to pewność FAKE.
-        # Wymagany jest "score" dla przewidzianej etykiety.
         predicted_labels.append(predicted_label)
         scores.append(score)
         
@@ -75,11 +64,9 @@ def run_prediction(texts):
 def evaluate_model(df, predicted_labels, scores):
     """Oblicza skuteczność, zapisuje wyniki do pliku i generuje wykres."""
     
-    # Dodanie wyników do DataFrame
     df['predicted_label'] = predicted_labels
     df['score'] = scores
     
-    # Obliczanie skuteczności (Accuracy)
     true_labels = df['true_label'].tolist()
     accuracy = accuracy_score(true_labels, predicted_labels)
     accuracy_percent = accuracy * 100
@@ -88,15 +75,12 @@ def evaluate_model(df, predicted_labels, scores):
     print(f"Skuteczność (Accuracy) modelu: {accuracy_percent:.2f}%")
     print("--------------------\n")
     
-    # Zapis wyników do pliku wyniki.csv
     df[['text', 'true_label', 'predicted_label', 'score']].to_csv(OUTPUT_FILE, index=False)
     print(f"Zapisano wyniki klasyfikacji do pliku: {OUTPUT_FILE}")
     
-    # Generowanie danych do wykresu
     correct_predictions = sum(df['true_label'] == df['predicted_label'])
     incorrect_predictions = len(df) - correct_predictions
     
-    # Tworzenie wykresu słupkowego
     fig, ax = plt.subplots()
     categories = ['Poprawne klasyfikacje', 'Niepoprawne klasyfikacje']
     counts = [correct_predictions, incorrect_predictions]
@@ -105,7 +89,6 @@ def evaluate_model(df, predicted_labels, scores):
     ax.set_ylabel('Liczba wiadomości')
     ax.set_title('Wyniki Klasyfikacji Modelu Fake News')
     
-    # Dodanie wartości na słupkach
     for bar in bars:
         yval = bar.get_height()
         ax.text(bar.get_x() + bar.get_width()/2, yval + 0.5, yval, ha='center', va='bottom', fontweight='bold')
@@ -161,26 +144,18 @@ def generate_report(total_rows, real_count, fake_count, accuracy_percent, correc
 
 def main():
     """Główna funkcja programu."""
-    # 1. Wczytanie danych
     df = load_data(INPUT_FILE)
     
-    # 2. Analiza danych
     total, real_count, fake_count = analyze_data(df)
     
-    # 3. Klasyfikacja wiadomości
     texts_to_classify = df['text'].tolist()
     predicted_labels, scores = run_prediction(texts_to_classify)
     
-    # 4. Ocena modelu, zapis wyników i generowanie wykresu
     accuracy, correct, incorrect = evaluate_model(df.copy(), predicted_labels, scores)
     
-    # 5. Generowanie raportu
     generate_report(total, real_count, fake_count, accuracy, correct, incorrect)
 
 if __name__ == "__main__":
-    # Sprawdzenie, czy plik wejściowy istnieje przed rozpoczęciem.
-    # W kontekście tego zadania, należy założyć, że plik wiadomosci.csv został
-    # utworzony ręcznie przez użytkownika na podstawie podanej wcześniej treści.
     if os.path.exists(INPUT_FILE):
         main()
     else:
